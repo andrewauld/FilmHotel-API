@@ -23,7 +23,7 @@ def add_to_watchlist(db: Session, user_id: int, item_in: WatchlistCreate) -> Wat
     # Check if already in watchlist
     existing = db.query(WatchlistItem).filter(
         WatchlistItem.user_id == user_id,
-        WatchlistItem.tmdb_film_id == item_in.tmdb_film_id
+        WatchlistItem.tmdb_id == item_in.tmdb_id
     ).first()
     
     if existing:
@@ -34,7 +34,9 @@ def add_to_watchlist(db: Session, user_id: int, item_in: WatchlistCreate) -> Wat
         
     db_item = WatchlistItem(
         user_id=user_id,
-        tmdb_film_id=item_in.tmdb_film_id
+        tmdb_id=item_in.tmdb_id,
+        title=item_in.title,
+        poster_path=item_in.poster_path
     )
     db.add(db_item)
     db.commit()
@@ -60,16 +62,19 @@ def remove_from_watchlist(db: Session, user_id: int, item_id: int):
 
 def get_watch_log(db: Session, user_id: int, skip: int = 0, limit: int = 100) -> list[WatchLogEntry]:
     """Get a user's watch history."""
-    return db.query(WatchLogEntry).filter(WatchLogEntry.user_id == user_id).order_by(WatchLogEntry.watched_at.desc()).offset(skip).limit(limit).all()
+    return db.query(WatchLogEntry).filter(WatchLogEntry.user_id == user_id).order_by(WatchLogEntry.logged_at.desc()).offset(skip).limit(limit).all()
 
 
 def log_watched_film(db: Session, user_id: int, log_in: WatchLogCreate) -> WatchLogEntry:
     """Log a film as watched."""
     db_log = WatchLogEntry(
         user_id=user_id,
-        tmdb_film_id=log_in.tmdb_film_id,
+        tmdb_id=log_in.tmdb_id,
+        title=log_in.title,
         rating=log_in.rating,
-        review=log_in.review
+        review=log_in.review,
+        director=log_in.director,
+        runtime=log_in.runtime
     )
     db.add(db_log)
     db.commit()
@@ -78,7 +83,7 @@ def log_watched_film(db: Session, user_id: int, log_in: WatchLogCreate) -> Watch
     # Optionally remove from watchlist if it was there
     existing_watchlist_item = db.query(WatchlistItem).filter(
         WatchlistItem.user_id == user_id,
-        WatchlistItem.tmdb_film_id == log_in.tmdb_film_id
+        WatchlistItem.tmdb_id == log_in.tmdb_id
     ).first()
     
     if existing_watchlist_item:

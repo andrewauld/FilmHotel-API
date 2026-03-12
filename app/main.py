@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import auth, films
+from app.routers import auth, films, watchlist
 
 app = FastAPI(
     title=settings.app_name,
@@ -26,6 +26,7 @@ app = FastAPI(
 # ── Include routers ───────────────────────────────────
 app.include_router(auth.router)
 app.include_router(films.router)
+app.include_router(watchlist.router)
 
 # ── CORS middleware ───────────────────────────────────
 app.add_middleware(

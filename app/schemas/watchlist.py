@@ -8,7 +8,9 @@ from pydantic import BaseModel, Field, ConfigDict
 
 class WatchlistCreate(BaseModel):
     """Schema for adding a movie to a watchlist."""
-    tmdb_film_id: int = Field(..., description="The TMDB ID of the film")
+    tmdb_id: int = Field(..., description="The TMDB ID of the film")
+    title: str = Field(..., description="The title of the film")
+    poster_path: str | None = Field(None, description="The URL of the poster image")
 
 
 class WatchlistResponse(WatchlistCreate):
@@ -24,14 +26,17 @@ class WatchlistResponse(WatchlistCreate):
 
 class WatchLogCreate(BaseModel):
     """Schema for logging a watched movie."""
-    tmdb_film_id: int = Field(..., description="The TMDB ID of the film")
-    rating: int | None = Field(None, ge=1, le=10, description="Optional rating from 1 to 10")
+    tmdb_id: int = Field(..., description="The TMDB ID of the film")
+    title: str = Field(..., description="The title of the film")
+    rating: float | None = Field(None, ge=0.5, le=10, description="Optional rating from 0.5 to 10")
     review: str | None = Field(None, description="Optional text review")
+    director: str | None = Field(None)
+    runtime: int | None = Field(None)
 
 
 class WatchLogUpdate(BaseModel):
     """Schema for updating an existing watch log entry."""
-    rating: int | None = Field(None, ge=1, le=10)
+    rating: float | None = Field(None, ge=0.5, le=10)
     review: str | None = Field(None)
 
 
@@ -39,6 +44,6 @@ class WatchLogResponse(WatchLogCreate):
     """Schema for returning a watch log entry."""
     id: int
     user_id: int
-    watched_at: datetime
+    logged_at: datetime
     
     model_config = ConfigDict(from_attributes=True)
