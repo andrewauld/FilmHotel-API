@@ -25,13 +25,13 @@ def override_get_db():
     finally:
         db.close()
 
-app.dependency_overrides[get_db] = override_get_db
-
 client = TestClient(app)
 
 @pytest.fixture(scope="module")
 def setup_test_user():
     """Create a user and seed their watch log for analytics."""
+    app.dependency_overrides[get_db] = override_get_db
+    
     client.post(
         "/auth/register",
         json={"username": "analyticuser", "email": "a@example.com", "password": "password123"}
@@ -61,7 +61,11 @@ def setup_test_user():
     from app.models.watch_log import WatchLogEntry
     from app.models.user import User
     
-    user = db.query(User).filter_by(username="analyticuser").first()
+    user = db.query(User).filter(User.username == "analyticuser").first()
+    if not user:
+        db.close()
+        return headers
+        
     for log in logs:
         entry = WatchLogEntry(
             user_id=user.id,
