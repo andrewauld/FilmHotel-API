@@ -63,4 +63,4 @@ async def get_film_details(
     """
     Get detailed information about a specific movie, including its director.
     """
-    return await tmdb_client.get_movie_details(film_id=film_id)
+    return await tmdb_client.get_movie_details(movie_id=film_id)
