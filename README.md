@@ -1,6 +1,7 @@
 # FilmHotel API
 
 A Film & TV Discovery API built with **FastAPI** and **PostgreSQL**. Search films via [TMDB](https://www.themoviedb.org/), maintain watchlists, log what you've watched, rate films, explore analytics, and get AI-powered personalised recommendations via [Google Gemini](https://ai.google.dev/).
+Deployment can be found [here](https://filmhotel-api.onrender.com).
 
 ---
 
